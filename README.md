@@ -7,3 +7,4 @@ Orientador: Jean
 
 Glossário para sinais da área da tecnologia da informação
 
+Colaborador/Intérprete: Deivid
