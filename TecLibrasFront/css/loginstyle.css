@@ -35,7 +35,7 @@ body {
    CARD DE LOGIN COM GLASSMORPHISM
    =================================================== */
 .login-card {
-  background: var(--card-bg); 
+  background: rgb(32 6 36 / 70%);; 
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 40px;

@@ -257,5 +257,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  
+// Fecha modais com ESC
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+
+    if (modal && modal.style.display === "block") {
+      modal.style.display = "none";
+    }
+
+    if (lightbox && lightbox.style.display === "flex") {
+      lightbox.style.display = "none";
+    }
+
+    if (userDropdown) {
+      userDropdown.classList.remove("show");
+    }
+  }
+});
 
 });
