@@ -9,46 +9,43 @@
 
 <body>
 
-  <header>
-    <!--div style="font-size: 20px; cursor: pointer;">☰</div-->
+  <!-- NOVA SIDEBAR UNIFICADA (Substituiu o Header e a Sidebar antiga) -->
+  <aside class="sidebar">
     
     <h1 class="logo-title">TecLibras</h1>
     
     <div class="search-container">
-      <input type="text" id="search-input" placeholder="Buscar sinal (ex: HTML, CSS...)" aria-label="Buscar sinal">
+      <input type="text" id="search-input" placeholder="Buscar sinal..." aria-label="Buscar sinal">
       <button id="clear-search" class="clear-search-btn" title="Limpar busca" type="button">&times;</button>
     </div>
+
+    <!-- Ferramentas da Sidebar (como o Upload) -->
+    <div class="sidebar-menu-items">
+      <div class="sidebar-tool tool-upload" title="Upload de novo sinal">➕ Novo Sinal</div>
+    </div>
     
+    <!-- Bloco de Acesso/Usuário empurrado para o final da barra -->
     <div class="user-access">
         <button id="theme-toggle" aria-label="Alternar modo escuro" type="button">🌙</button>
-        
         <div class="user-icon" id="user-menu-btn" title="Login/Cadastro">👤</div>
         
         <div id="user-dropdown" class="user-dropdown">
-          
           <div id="login-form-container">
             <input type="text" id="login-user" placeholder="Usuário ou E-mail">
             <input type="password" id="login-pass" placeholder="Senha">
             <button id="btn-entrar">Entrar</button>
           </div>
-          
           <div id="logged-container" style="display: none;">
             <p>Olá, <span id="username-display">Professor</span>!</p>
             <button id="btn-sair">Sair</button>
           </div>
-
         </div>
     </div>
-  </header>
 
-  <!-- Botões laterais -->
-  <aside class="sidebar">
-    <!-- div class="sidebar-tool" title="Categorias">📂</div> -->
-    <!-- div class="sidebar-tool" title="Opções">⚙️</div -->
-    <div class="sidebar-tool tool-upload" title="Upload de novo sinal">➕</div>
   </aside>
 
-  <div class="container">
+  <!-- CONTEÚDO PRINCIPAL À DIREITA -->
+  <main class="container">
 
     <div class="card">
       <div class="acoes-card">
@@ -181,11 +178,7 @@
       <p>Sinal em Libras para "BOOTSTRAP"</p>
     </div>
 
-  </div>
-
-  <footer>
-    <p>&copy; 2026 TecLibras - Painel Administrativo</p>
-  </footer>
+  </main>
 
   <div id="modal-upload" class="modal">
     <div class="modal-content">
@@ -228,11 +221,11 @@
   <!-- Conexão com o arquivo JavaScript externo -->
   <script src="js/script.js"></script>
 
- <!-- Aumento da imagem ao toque --> 
-<div id="lightbox-modal" class="lightbox">
-  <span class="lightbox-close">&times;</span>
-  <img class="lightbox-content" id="lightbox-img" alt="Sinal em tamanho grande">
-</div>
+  <!-- Aumento da imagem ao toque --> 
+  <div id="lightbox-modal" class="lightbox">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightbox-img" alt="Sinal em tamanho grande">
+  </div>
 
 </body>
 </html>
