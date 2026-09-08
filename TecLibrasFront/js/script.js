@@ -1,16 +1,15 @@
+const apiUrl = 'http://localhost:5079/api/sinais'; 
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🛡️ SEGURANÇA E CONTROLE DE PERFIL (CHECA O LOGIN)
   const role = localStorage.getItem("teclibras_role");
   const username = localStorage.getItem("teclibras_user");
 
-  // Se não houver login salvo, manda de volta para a tela de login
   if (!role) {
     window.location.href = "login.html";
     return;
   }
 
-  // Elementos do cabeçalho para atualizar o perfil logado
   const usernameDisplay = document.getElementById("username-display");
   const loginFormContainer = document.getElementById("login-form-container");
   const loggedContainer = document.getElementById("logged-container");
@@ -19,15 +18,65 @@ document.addEventListener("DOMContentLoaded", () => {
   if (loginFormContainer) loginFormContainer.style.display = "none";
   if (loggedContainer) loggedContainer.style.display = "block";
 
-  // Se for professor, ativa as ferramentas visuais de edição/exclusão/upload
   if (role === "professor") {
     document.body.classList.add("perfil-professor");
   } else {
     document.body.classList.remove("perfil-professor");
   }
 
+  carregarSinais();
 
-  // 🔍 BUSCA EM TEMPO REAL (INSTANTÂNEA) COM BOTÃO LIMPAR
+  async function carregarSinais() {
+    const container = document.getElementById('sinais-container');
+    if (!container) return;
+
+    try {
+      const resposta = await fetch(apiUrl);
+      if (!resposta.ok) throw new Error("Erro de conexão");
+      
+      const sinais = await resposta.json();
+      container.innerHTML = ''; 
+      
+      if (sinais.length === 0) {
+        container.innerHTML = '<p style="text-align: center; width: 100%;">Nenhum sinal cadastrado ainda.</p>';
+        return;
+      }
+
+      sinais.forEach(sinal => {
+        let urlImg1 = sinal.imagem.url.startsWith("http") ? sinal.imagem.url : `http://localhost:5079/${sinal.imagem.url}`;
+        let imagensHtml = `<img src="${urlImg1}" alt="${sinal.termoTi}">`;
+        
+        if (sinal.imagemSecundaria && sinal.imagemSecundaria.url) {
+          let urlImg2 = sinal.imagemSecundaria.url.startsWith("http") ? sinal.imagemSecundaria.url : `http://localhost:5079/${sinal.imagemSecundaria.url}`;
+          imagensHtml += `<img src="${urlImg2}" alt="${sinal.termoTi}">`;
+        }
+
+        let videoHtml = `<iframe src="${sinal.video.url}" width="100%" height="200" frameborder="0" allowfullscreen></iframe>`;
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.id = sinal.id;
+        card.innerHTML = `
+          <div class="acoes-card">
+            <button class="btn-edit" title="Editar">✏️</button>
+            <button class="btn-delete" title="Excluir">🗑️</button>
+          </div>
+          <h2>${sinal.termoTi}</h2>
+          <div class="translation">
+            ${imagensHtml}
+          </div>
+          ${videoHtml}
+          <p>${sinal.descricaoSinal || `Sinal em Libras para "${sinal.termoTi}"`}</p>
+          ${sinal.nomeInterprete ? `<p><small>Intérprete: ${sinal.nomeInterprete}</small></p>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    } catch (erro) {
+      console.error(erro);
+      container.innerHTML = '<p style="text-align: center; width: 100%; color: red;">Erro ao conectar com o servidor.</p>';
+    }
+  }
+
   const searchInput = document.getElementById("search-input");
   const clearSearchBtn = document.getElementById("clear-search");
 
@@ -62,27 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 📂 CATEGORIAS
-  const btnCategorias = document.querySelector('[title="Categorias"]');
-  if (btnCategorias) {
-    btnCategorias.addEventListener("click", () => {
-      const cards = document.querySelectorAll(".card");
-      cards.forEach(card => {
-        card.style.display = "";
-      });
-      alert("Categorias: mostrando todos os conteúdos");
-    });
-  }
-
-  // ⚙️ OPÇÕES
-  const btnOpcoes = document.querySelector('[title="Opções"]');
-  if (btnOpcoes) {
-    btnOpcoes.addEventListener("click", () => {
-      alert("Painel de opções (em breve você pode adicionar configurações aqui)");
-    });
-  }
-
-  // 🌙 ALTERNAR MODO ESCURO
   const themeToggle = document.getElementById("theme-toggle");
   if (themeToggle) {
     themeToggle.addEventListener("click", () => {
@@ -97,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 👤 DROPDOWN DE USUÁRIO
   const userMenuBtn = document.getElementById("user-menu-btn");
   const userDropdown = document.getElementById("user-dropdown");
   const btnSair = document.getElementById("btn-sair");
@@ -107,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
       userDropdown.classList.toggle("show");
     });
-
     document.addEventListener("click", (e) => {
       if (!userDropdown.contains(e.target) && e.target !== userMenuBtn) {
         userDropdown.classList.remove("show");
@@ -115,165 +141,155 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🚪 BOTÃO SAIR (LOGOUT COMPLETO)
   if (btnSair) {
     btnSair.addEventListener("click", () => {
-      localStorage.clear(); // Limpa a memória de quem estava logado
-      window.location.href = "login.html"; // Chuta de volta para a tela de login
+      localStorage.clear(); 
+      window.location.href = "login.html"; 
     });
   }
 
-  // ➕ MODAL NOVO SINAL
   const modal = document.getElementById("modal-upload");
   const btnUpload = document.querySelector(".tool-upload");
   const btnFecharModal = document.getElementById("fechar-modal");
   const btnSalvarSinal = document.getElementById("salvar-sinal");
-  let cardEditando = null;
+  let sinalEditandoId = null;
 
   if (btnUpload && modal) {
     btnUpload.addEventListener("click", () => {
+      sinalEditandoId = null;
+      document.querySelectorAll("#modal-upload input, #modal-upload textarea").forEach(campo => {
+        campo.value = "";
+      });
       modal.style.display = "block";
-      const dataInput = document.getElementById("data_publicacao");
-      if (dataInput) {
-        dataInput.value = new Date().toISOString().split("T")[0];
-      }
     });
   }
 
   if (btnFecharModal && modal) {
-    btnFecharModal.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
+    btnFecharModal.addEventListener("click", () => modal.style.display = "none");
   }
 
   if (btnSalvarSinal) {
-    btnSalvarSinal.addEventListener("click", () => {
+    btnSalvarSinal.addEventListener("click", async () => {
       const termo = document.getElementById("termo_ti").value;
       const descricao = document.getElementById("descricao_sinal").value;
       const interprete = document.getElementById("id_interprete").value;
-      const data = document.getElementById("data_publicacao").value;
-      const tipo = document.getElementById("tipo_midia").value;
-      const arquivoInput = document.getElementById("url_arquivo");
-      const arquivo = arquivoInput ? arquivoInput.files[0] : null;
-      const formato = document.getElementById("formato").value;
+      const videoUrl = document.getElementById("video_url").value;
+      const imagemInput = document.getElementById("imagem_arquivo");
+      const imagemSecInput = document.getElementById("imagem_secundaria_arquivo");
 
-      if (!termo) {
-        alert("Informe o Termo TI.");
+      if (!termo || !videoUrl) {
+        alert("O termo e o link do vídeo são obrigatórios!");
         return;
       }
 
-      if (cardEditando) {
-        cardEditando.querySelector("h2").innerText = termo;
-        const descricaoTag = cardEditando.querySelector(".translation p");
-        if (descricaoTag) {
-          descricaoTag.innerText = descricao;
-        }
-        cardEditando = null;
-      } else {
-        const container = document.querySelector(".container");
-        if (container) {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <div class="acoes-card">
-                <button class="btn-edit">✏️</button>
-                <button class="btn-delete">🗑️</button>
-            </div>
-            <h2>${termo}</h2>
-            <div class="translation">
-                <p>${descricao}</p>
-            </div>
-            <p><b>Intérprete:</b> ${interprete}</p>
-            <p><b>Data:</b> ${data}</p>
-            <p><b>Tipo:</b> ${tipo}</p>
-            <p><b>Formato:</b> ${formato}</p>
-            <p>Arquivo: ${arquivo ? arquivo.name : 'Nenhum'}</p>
-          `;
-          container.appendChild(card);
-        }
+      const formData = new FormData();
+      formData.append("TermoTi", termo);
+      formData.append("DescricaoSinal", descricao || "");
+      formData.append("IdInterprete", interprete || "0");
+      formData.append("VideoUrl", videoUrl);
+
+      if (imagemInput.files[0]) {
+        formData.append("ImagemArquivo", imagemInput.files[0]);
+      }
+      if (imagemSecInput.files[0]) {
+        formData.append("ImagemSecundariaArquivo", imagemSecInput.files[0]);
       }
 
-      modal.style.display = "none";
-      document.querySelectorAll("#modal-upload input, #modal-upload textarea").forEach(campo => campo.value = "");
+      try {
+        let url = apiUrl;
+        let metodo = "POST";
+
+        if (sinalEditandoId) {
+          url = `${apiUrl}/${sinalEditandoId}`;
+          metodo = "PUT";
+        }
+
+        const resposta = await fetch(url, {
+          method: metodo,
+          body: formData
+        });
+
+        if (!resposta.ok) throw new Error("Erro ao salvar sinal");
+
+        modal.style.display = "none";
+        carregarSinais();
+      } catch (erro) {
+        console.error(erro);
+        alert("Falha ao salvar no banco de dados.");
+      }
     });
   }
 
-  // ✏️ EVENTO EDITAR
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", async (e) => {
     if (!e.target.classList.contains("btn-edit")) return;
 
     const card = e.target.closest(".card");
-    cardEditando = card;
+    const id = card.dataset.id;
+    sinalEditandoId = id;
 
-    const titulo = card.querySelector("h2")?.innerText || "";
-    const descricao = card.querySelector(".translation p")?.innerText || "";
+    try {
+      const resposta = await fetch(`${apiUrl}/${id}`);
+      if (!resposta.ok) throw new Error("Erro ao buscar dados");
+      const sinal = await resposta.json();
 
-    const termoInput = document.getElementById("termo_ti");
-    const descInput = document.getElementById("descricao_sinal");
+      document.getElementById("termo_ti").value = sinal.termoTi;
+      document.getElementById("descricao_sinal").value = sinal.descricaoSinal || '';
+      document.getElementById("id_interprete").value = sinal.idInterprete || '';
+      document.getElementById("video_url").value = sinal.video.url.replace("embed/", "watch?v=");
 
-    if (termoInput) termoInput.value = titulo;
-    if (descInput) descInput.value = descricao;
-
-    if (modal) modal.style.display = "block";
+      modal.style.display = "block";
+    } catch (erro) {
+      console.error(erro);
+      alert("Erro ao buscar dados para edição.");
+    }
   });
 
-  // 🗑️ EVENTO EXCLUIR
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", async (e) => {
     if (!e.target.classList.contains("btn-delete")) return;
 
     const confirmar = confirm("Deseja realmente excluir este sinal?");
     if (!confirmar) return;
 
     const card = e.target.closest(".card");
-    if (card) card.remove();
+    const id = card.dataset.id;
+
+    try {
+      const resposta = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      if (!resposta.ok) throw new Error("Erro ao excluir");
+      card.remove();
+    } catch (erro) {
+      console.error(erro);
+      alert("Falha ao excluir o sinal no banco.");
+    }
   });
 
-
-  // 📸 LÓGICA PARA IMAGENS EM TELA CHEIA (LIGHTBOX INSERIDA AQUI)
   const lightbox = document.getElementById("lightbox-modal");
   const lightboxImg = document.getElementById("lightbox-img");
   const lightboxClose = document.querySelector(".lightbox-close");
 
   if (lightbox && lightboxImg) {
-    // Escuta cliques no site todo, mas só ativa se clicar em uma tag IMG dentro de um .card
     document.addEventListener("click", (e) => {
       if (e.target.closest(".card") && e.target.tagName === "IMG") {
-        lightbox.style.display = "flex"; // Abre a estrutura com flexbox
-        lightboxImg.src = e.target.src;   // Copia o link da foto pro modal
+        lightbox.style.display = "flex"; 
+        lightboxImg.src = e.target.src;  
       }
     });
 
-    // Fecha ao clicar no botão X
     if (lightboxClose) {
-      lightboxClose.addEventListener("click", () => {
-        lightbox.style.display = "none";
-      });
+      lightboxClose.addEventListener("click", () => lightbox.style.display = "none");
     }
 
-    // Fecha ao clicar fora da foto (na região escura do fundo)
     lightbox.addEventListener("click", (e) => {
-      if (e.target === lightbox) {
-        lightbox.style.display = "none";
-      }
+      if (e.target === lightbox) lightbox.style.display = "none";
     });
   }
   
-// Fecha modais com ESC
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-
-    if (modal && modal.style.display === "block") {
-      modal.style.display = "none";
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (modal && modal.style.display === "block") modal.style.display = "none";
+      if (lightbox && lightbox.style.display === "flex") lightbox.style.display = "none";
+      if (userDropdown) userDropdown.classList.remove("show");
     }
-
-    if (lightbox && lightbox.style.display === "flex") {
-      lightbox.style.display = "none";
-    }
-
-    if (userDropdown) {
-      userDropdown.classList.remove("show");
-    }
-  }
-});
+  });
 
 });

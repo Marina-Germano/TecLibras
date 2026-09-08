@@ -45,147 +45,19 @@
   </aside>
 
   <!-- CONTEÚDO PRINCIPAL À DIREITA -->
-  <main class="container">
 
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>HTML</h2>
-      <div class="translation">
-        <img src="img/Html1.png">
-        <img src="img/Html2.png">
-      </div>
-      <video controls><source src="video/Html.mp4"></video>
-      <p>Sinal em Libras para "HTML"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>CSS</h2>
-      <div class="translation">
-        <img src="img/Css1.png">
-        <img src="img/Css2.png">
-      </div>
-      <video controls><source src="video/css.mp4"></video>
-      <p>Sinal em Libras para "CSS"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>JAVASCRIPT</h2>
-      <div class="translation">
-        <img src="img/JavaScript1.png">
-        <img src="img/JavaScript2.png">
-      </div>
-      <video controls><source src="video/Js.mp4"></video>
-      <p>Sinal em Libras para "JAVASCRIPT"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>PHP</h2>
-      <div class="translation"><img src="img/PHP.png"></div>
-      <video controls><source src="video/Php.mp4"></video>
-      <p>Sinal em Libras para "PHP"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>MYSQL</h2>
-      <div class="translation"><img src="img/MySql.png"></div>
-      <video controls><source src="video/Mysql.mp4"></video>
-      <p>Sinal em Libras para "MYSQL"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>PYTHON</h2>
-      <div class="translation"><img src="img/Python.png"></div>
-      <video controls><source src="video/Python.mp4"></video>
-      <p>Sinal em Libras para "PYTHON"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>JAVA</h2>
-      <div class="translation">
-        <img src="img/Java1.png">
-        <img src="img/Java1.png"> 
-      </div>
-      <video controls><source src="video/Java.mp4"></video>
-      <p>Sinal em Libras para "JAVA"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>C Sharp</h2>
-      <div class="translation">
-        <img src="img/C Sharp1.png">
-        <img src="img/C Sharp2.png">
-      </div>
-      <video controls><source src="video/C Sharp.mp4"></video>
-      <p>Sinal em Libras para "C Sharp"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>VISUAL STUDIO</h2>
-      <div class="translation">
-        <img src="img/VS1.png">
-        <img src="img/VS2.png">
-      </div>
-      <video controls><source src="video/vs.mp4"></video>
-      <p>Sinal em Libras para "VISUAL STUDIO"</p>
-    </div>
-
-    <div class="card">
-      <div class="acoes-card">
-        <button class="btn-edit" title="Editar">✏️</button>
-        <button class="btn-delete" title="Excluir">🗑️</button>
-      </div>
-      <h2>BOOTSTRAP</h2>
-      <div class="translation">
-        <img src="img/Boot1.png">
-        <img src="img/Boot2.png">
-      </div>
-      <video controls><source src="video/Boot.mp4"></video>
-      <p>Sinal em Libras para "BOOTSTRAP"</p>
-    </div>
-
+  <main class="container" id="sinais-container">
+      <p style="text-align: center; width: 100%;">Carregando sinais...</p>
   </main>
+
+
 
   <div id="modal-upload" class="modal">
     <div class="modal-content">
       <h2>Cadastrar Novo Sinal</h2>
 
       <label>Termo TI</label>
-      <input type="text" id="termo_ti">
+      <input type="text" id="termo_ti" placeholder="Ex: HTML">
 
       <label>Descrição do Sinal</label>
       <textarea id="descricao_sinal"></textarea>
@@ -193,23 +65,15 @@
       <label>ID do Intérprete</label>
       <input type="number" id="id_interprete">
 
-      <label>Data da Publicação</label>
-      <input type="date" id="data_publicacao">
+      <h3>Mídias Obrigatórias</h3>
+      <label>URL do Vídeo</label>
+      <input type="text" id="video_url" placeholder="https://www.youtube.com/watch?v=...">
+      
+      <label>Imagem Principal</label>
+      <input type="file" id="imagem_arquivo" accept="image/*">
 
-      <h3>Mídia</h3>
-
-      <label>Tipo da Mídia</label>
-      <select id="tipo_midia">
-        <option value="imagem">Imagem</option>
-        <option value="video">Vídeo</option>
-        <option value="gif">GIF</option>
-      </select>
-
-      <label>Upload do Arquivo</label>
-      <input type="file" id="url_arquivo">
-
-      <label>Formato</label>
-      <input type="text" id="formato" placeholder="jpg, png, mp4...">
+      <label>Imagem Secundária - Opcional</label>
+      <input type="file" id="imagem_secundaria_arquivo" accept="image/*">
 
       <div class="modal-buttons">
         <button id="salvar-sinal">Salvar</button>

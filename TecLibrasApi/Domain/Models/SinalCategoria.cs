@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TecLibrasApi.Domain.Models
 {
+    [Table("sinal_categoria")]
     public class SinalCategoria
     {
-    public int IdSinal { get; set; }
-    public Sinal Sinal { get; set; } = null!;
+        [Column("id_sinal")]
+        public int IdSinal { get; set; }
 
-    public int IdCategoria { get; set; }
-    public Categoria Categoria { get; set; } = null!;
+        [Column("id_categoria")]
+        public int IdCategoria { get; set; }
     }
 }
