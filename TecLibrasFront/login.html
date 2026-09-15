@@ -14,6 +14,9 @@
   
   <!-- LINK PARA O SEU ARQUIVO CSS EXTERNO -->
   <link rel="stylesheet" href="css/loginstyle.css">
+
+  <!-- Biblioteca oficial do Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -55,6 +58,29 @@
       <span>Entrar no Sistema</span>
       <i class="fa-solid fa-arrow-right-to-bracket"></i>
     </button>
+
+    <!-- Divisor visual simples -->
+    <div style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
+      <span>ou</span>
+    </div>
+
+    <!-- Configuração do Google Identity Services -->
+    <div id="g_id_onload"
+         data-client_id="821142423558-3g93b4dkkvpu72q2gjkaa02s8uij4q7n.apps.googleusercontent.com"
+         data-callback="handleGoogleLogin">
+    </div>
+
+    <!-- Botão Visual do Google (Centralizado) -->
+    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+      <div class="g_id_signin" 
+           data-type="standard" 
+           data-theme="outline" 
+           data-size="large"
+           data-text="sign_in_with"
+           data-shape="rectangular"
+           data-logo_alignment="left">
+      </div>
+    </div>
 
     <!-- Quadro de credenciais recomendadas -->
     <div class="Dica">

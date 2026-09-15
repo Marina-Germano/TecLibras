@@ -43,12 +43,33 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       sinais.forEach(sinal => {
-        let urlImg1 = sinal.imagem.url.startsWith("http") ? sinal.imagem.url : `http://localhost:5079/${sinal.imagem.url}`;
-        let imagensHtml = `<img src="${urlImg1}" alt="${sinal.termoTi}">`;
+        // let urlImg1 = sinal.imagem.url.startsWith("http") ? sinal.imagem.url : `http://localhost:5079/${sinal.imagem.url}`;
+        // let imagensHtml = `<img src="${urlImg1}" alt="${sinal.termoTi} - Principal">`;
         
-        if (sinal.imagemSecundaria && sinal.imagemSecundaria.url) {
-          let urlImg2 = sinal.imagemSecundaria.url.startsWith("http") ? sinal.imagemSecundaria.url : `http://localhost:5079/${sinal.imagemSecundaria.url}`;
-          imagensHtml += `<img src="${urlImg2}" alt="${sinal.termoTi}">`;
+        // if (sinal.imagemSecundaria && sinal.imagemSecundaria.url) {
+        //   let urlImg2 = sinal.imagemSecundaria.url.startsWith("http") ? sinal.imagemSecundaria.url : `http://localhost:5079/${sinal.imagemSecundaria.url}`;
+        //   imagensHtml += `<img src="${urlImg2}" alt="${sinal.termoTi} - Secundária">`;
+        // }
+        let imagensHtml = '';
+
+        // Verifica e monta a Imagem Principal com segurança
+        if (sinal.imagem) {
+          let urlOriginal1 = sinal.imagem.url || (typeof sinal.imagem === 'string' ? sinal.imagem : null);
+          if (urlOriginal1) {
+            let urlImg1 = urlOriginal1.startsWith("http") ? urlOriginal1 : `http://localhost:5079/${urlOriginal1}`;
+            imagensHtml += `<img src="${urlImg1}" alt="${sinal.termoTi} - Principal">`;
+          }
+        }
+
+        // Verifica e monta a Imagem Secundária com segurança
+        if (sinal.imagemSecundaria) {
+          // Pega a URL caso seja um objeto (.url) ou caso seja uma string direta
+          let urlOriginal2 = sinal.imagemSecundaria.url || (typeof sinal.imagemSecundaria === 'string' ? sinal.imagemSecundaria : null);
+          
+          if (urlOriginal2) {
+            let urlImg2 = urlOriginal2.startsWith("http") ? urlOriginal2 : `http://localhost:5079/${urlOriginal2}`;
+            imagensHtml += `<img src="${urlImg2}" alt="${sinal.termoTi} - Secundária" style="margin-left: 10px;">`; // Margem para evitar que fiquem coladas/sobrepostas
+          }
         }
 
         let videoHtml = `<iframe src="${sinal.video.url}" width="100%" height="200" frameborder="0" allowfullscreen></iframe>`;
@@ -192,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("ImagemArquivo", imagemInput.files[0]);
       }
       if (imagemSecInput.files[0]) {
-        formData.append("ImagemSecundariaArquivo", imagemSecInput.files[0]);
+        formData.append("ImagemSecundaria", imagemSecInput.files[0]);
       }
 
       try {
@@ -209,7 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
           body: formData
         });
 
-        if (!resposta.ok) throw new Error("Erro ao salvar sinal");
+        if (!resposta.ok) {
+          const erroJson = await resposta.json();
+          throw new Error(erroJson.mensagem || "Erro ao salvar sinal");
+        }
 
         modal.style.display = "none";
         carregarSinais();

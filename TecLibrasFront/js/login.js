@@ -37,4 +37,39 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ativa a escuta do "Enter" tanto no campo de usuário quanto no de senha
   if (userInput) userInput.addEventListener("keydown", checarTeclaEnter);
   if (passInput) passInput.addEventListener("keydown", checarTeclaEnter);
+
+  // ==========================================
+  // INTEGRAÇÃO COM GOOGLE SIGN-IN
+  // ==========================================
+
+  function handleGoogleLogin(response) {
+      const token = response.credential;
+      const payload = decodeJwtResponse(token);
+      
+      console.log("Dados do usuário logado pelo Google:", payload);
+      
+      localStorage.setItem("teclibras_user", payload.name);
+      localStorage.setItem("teclibras_email", payload.email);
+      
+      // Define o papel do usuário (pode ser ajustado futuramente)
+      localStorage.setItem("teclibras_role", "aluno"); 
+      
+      // Redireciona para a página principal
+      window.location.href = "index.html"; 
+  }
+
+  function decodeJwtResponse(token) {
+      let base64Url = token.split('.')[1];
+      let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+  }
+
+  // ⚠️ ESSA LINHA É O SEGREDO: 
+  // Ela garante que o HTML consiga enxergar a função, mesmo que este arquivo 
+  // seja carregado como módulo ou esteja protegido dentro de um escopo.
+  window.handleGoogleLogin = handleGoogleLogin;
+
 });

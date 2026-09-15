@@ -54,11 +54,17 @@ namespace TecLibrasApi.Controllers // Ajuste para o namespace do seu projeto
             {
                 return BadRequest(ModelState); // Retorna 400 Bad Request se faltar vídeo, imagem, etc.
             }
-
-            var idGerado = await _repository.AdicionarAsync(dto);
-            
-            // Retorna 201 Created apontando para a rota de GET do item criado
-            return CreatedAtAction(nameof(GetPorId), new { id = idGerado }, new { id = idGerado, mensagem = "Sinal cadastrado com sucesso!" });
+            try
+            {
+                var idGerado = await _repository.AdicionarAsync(dto);
+                
+                return CreatedAtAction(nameof(GetPorId), new { id = idGerado }, new { id = idGerado, mensagem = "Sinal cadastrado com sucesso!" });
+            }
+            catch (ArgumentException ex)
+            {
+                // Captura a mensagem de que a imagem principal é obrigatória e retorna 400 com texto claro
+                return BadRequest(new { mensagem = ex.Message });
+            }
         }
 
         // ==========================================
