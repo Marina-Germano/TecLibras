@@ -1,0 +1,224 @@
+/* ===================================================
+   VARIÁVEIS GLOBAIS E CONFIGURAÇÃO DE CORES (Idênticas ao Login)
+   =================================================== */
+:root {
+  --primary-color: #0072ff;       /* Azul Royal */
+  --neon-cyan: #00f2fe;           /* Ciano Neon */
+  --text-white: #f8fafc;          /* Branco Suave */
+  --text-gray: #94a3b8;           /* Cinza Metálico */
+  --card-bg: rgba(6, 18, 36, 0.70); /* Vidro Escuro Translúcido */
+  --border-glass: rgba(0, 242, 254, 0.2); /* Borda brilhante azulada */
+}
+
+/* ===================================================
+   CORPO DA PÁGINA
+   =================================================== */
+/* ===================================================
+   CORPO DA PÁGINA (Ajustado para não tapar o sinal)
+   =================================================== */
+body {
+  margin: 0;
+  font-family: "Urbanist", sans-serif;
+  background-image: linear-gradient(180deg, rgba(3, 7, 18, 0.4) 0%, rgba(3, 7, 18, 0.8) 100%), 
+                    url('../img/Logo1.png');
+  background-size: cover;
+  background-position: left center; /* Mantém o avatar ancorado à esquerda */
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  display: flex;
+  
+  /* ESTAS DUAS LINHAS SÃO A MÁGICA: */
+  justify-content: flex-end; /* Empurra o conteúdo para a direita */
+  padding: 20px 10%; /* Cria um respiro de 10% na margem direita */
+  
+  align-items: center;
+  min-height: 100vh;
+  overflow-y: auto;
+  position: relative;
+  box-sizing: border-box;
+}
+/* ===================================================
+   CARD DE CADASTRO COM GLASSMORPHISM (Um pouco mais largo)
+   =================================================== */
+.login-card {
+  background: rgba(18, 6, 36, 0.55);
+  backdrop-filter: blur(15px); /* Desfoque ligeiramente menor */
+  -webkit-backdrop-filter: blur(15px);
+  padding: 35px 40px;
+  border-radius: 24px;
+  border: 1px solid var(--border-glass); 
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 
+              0 0 30px rgba(0, 242, 254, 0.1);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+
+/* Detalhe luminoso no topo do card */
+.brand-glow {
+  width: 50px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--neon-cyan));
+  margin: 0 auto 20px auto;
+  border-radius: 2px;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.8);
+}
+
+.login-card h1 {
+  color: var(--text-white);
+  margin: 0 0 5px 0;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.login-card h1 span {
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--primary-color) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-card p {
+  color: var(--text-gray);
+  margin-bottom: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ===================================================
+   CAMPOS DE ENTRADA (INPUTS E SELECTS)
+   =================================================== */
+.input-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #e2e8f0;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper i.input-icon {
+  position: absolute;
+  left: 15px;
+  color: #64748b;
+  font-size: 16px;
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+/* Estilo unificado para input de texto, senha, data e select */
+.input-group input,
+.input-wrapper select,
+.input-wrapper input[type="date"] {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--text-white);
+  transition: all 0.3s ease;
+  font-family: inherit;
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #475569;
+}
+
+.input-group input:focus,
+.input-wrapper select:focus,
+.input-wrapper input[type="date"]:focus {
+  border-color: var(--neon-cyan);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+}
+
+.input-group input:focus + i.input-icon,
+.input-wrapper select:focus ~ i.input-icon {
+  color: var(--neon-cyan);
+}
+
+/* Personalizando o Select (Perfil) para combinar com o tema escuro */
+.input-wrapper select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.input-wrapper select option {
+  background-color: #0c192c;
+  color: var(--text-white);
+}
+
+/* Ajuste do calendário nativo */
+.input-wrapper input[type="date"] {
+  cursor: pointer;
+}
+
+.input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(1);
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.input-wrapper input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* ===================================================
+   BOTÃO DE CADASTRO
+   =================================================== */
+#btn-enviar-codigo {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--neon-cyan) 100%);
+  color: var(--text-white);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 242, 254, 0.25);
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-family: inherit;
+}
+
+#btn-enviar-codigo:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 25px rgba(0, 242, 254, 0.45);
+  filter: brightness(1.1);
+}
+
+#btn-enviar-codigo:active {
+  transform: scale(1);
+}

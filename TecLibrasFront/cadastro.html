@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TecLibras - Cadastro de Usuário</title>
+  
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts: Urbanist -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CORRIGIDO: Link para o CSS específico do cadastro -->
+  <link rel="stylesheet" href="css/cadastro.css">
+</head>
+<body>
+
+  <!-- CONTAINER DE CADASTRO -->
+  <div class="login-card cadastro-card">
+    <div class="brand-glow"></div>
+    <h1>Tec<span>Libras</span></h1>
+    <p>Criar Nova Conta</p>
+
+    <!-- Campo E-mail -->
+    <div class="input-group">
+      <label for="cad-email">E-mail</label>
+      <div class="input-wrapper">
+        <input type="email" id="cad-email" placeholder="seu.email@exemplo.com" autocomplete="off">
+        <i class="fa-solid fa-envelope input-icon"></i>
+      </div>
+    </div>
+
+    <!-- Campo Tipo de Usuário -->
+    <div class="input-group">
+      <label for="cad-perfil">Tipo de Usuário</label>
+      <div class="input-wrapper">
+        <select id="cad-perfil">
+          <option value="" disabled selected>Selecione seu perfil...</option>
+          <option value="aluno">Aluno</option>
+          <option value="professor">Professor</option>
+          <option value="interprete">Intérprete</option>
+        </select>
+        <i class="fa-solid fa-user-tag input-icon"></i>
+      </div>
+    </div>
+
+    <!-- Campo Data de Nascimento -->
+    <div class="input-group">
+      <label for="cad-nascimento">Data de Nascimento</label>
+      <div class="input-wrapper">
+        <input type="date" id="cad-nascimento">
+        <i class="fa-solid fa-calendar-days input-icon"></i>
+      </div>
+    </div>
+
+    <!-- Campo Senha -->
+    <div class="input-group">
+      <label for="cad-senha">Senha</label>
+      <div class="input-wrapper">
+        <input type="password" id="cad-senha" placeholder="Crie uma senha segura">
+        <i class="fa-solid fa-lock input-icon"></i>
+      </div>
+    </div>
+
+    <!-- Campo Confirmar Senha -->
+    <div class="input-group">
+      <label for="cad-confirma-senha">Confirmar Senha</label>
+      <div class="input-wrapper">
+        <input type="password" id="cad-confirma-senha" placeholder="Repita a senha">
+        <i class="fa-solid fa-lock input-icon"></i>
+      </div>
+    </div>
+
+    <!-- Botão de Cadastro -->
+    <button id="btn-enviar-codigo">
+      <span>Enviar Código para o E-mail</span>
+      <i class="fa-solid fa-paper-plane"></i>
+    </button>
+
+    <!-- Link Voltar -->
+    <div style="margin-top: 20px; text-align: center; font-size: 14px;">
+      <a href="login.html" style="color: var(--text-gray); text-decoration: none; font-weight: 500; transition: color 0.3s;">
+        <i class="fa-solid fa-arrow-left"></i> Voltar para o Login
+      </a>
+    </div>
+  </div>
+
+  <!-- Script JS para validação básica e simulação de envio -->
+  <script>
+    document.getElementById('btn-enviar-codigo').addEventListener('click', function() {
+      const email = document.getElementById('cad-email').value;
+      const perfil = document.getElementById('cad-perfil').value;
+      const nascimento = document.getElementById('cad-nascimento').value;
+      const senha = document.getElementById('cad-senha').value;
+      const confirmaSenha = document.getElementById('cad-confirma-senha').value;
+
+      if (!email || !perfil || !nascimento || !senha || !confirmaSenha) {
+        alert('Por favor, preencha todos os campos!');
+        return;
+      }
+
+      if (senha !== confirmaSenha) {
+        alert('As senhas não coincidem!');
+        return;
+      }
+
+      // Simulação. Quando a API estiver pronta, faremos um fetch() aqui.
+      alert(`Código de verificação enviado para ${email}! Verifique sua caixa de entrada.`);
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>
