@@ -38,12 +38,29 @@ body {
     box-shadow: 4px 0 15px rgba(0,0,0,0.1);
 }
 
+/* NOVO: Alinha a logo e o título lado a lado no topo da sidebar */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Estilo da Logo redonda */
+.sidebar-logo {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 50%; /* Deixa a imagem totalmente redonda */
+}
+
 .logo-title {
     font-size: 26px;
-    margin: 0 0 5px 0;
+    margin: 0;
     font-weight: bold;
     letter-spacing: 1px;
-    text-align: center;
+    text-align: left; /* Alinhado à esquerda para acompanhar a logo */
 }
 
 /* Campo de Busca dentro da Sidebar */
@@ -64,7 +81,6 @@ body {
     box-sizing: border-box;
     transition: background-color 0.2s, box-shadow 0.2s;
 }
-
 #search-input::placeholder {
     color: rgba(255, 255, 255, 0.75);
 }
@@ -558,4 +574,29 @@ body.dark-mode #search-input:focus {
         margin-left: 0;
         width: 100%;
     }
+}
+
+
+/* Grupo de texto para empilhar o título e o copyright discretamente */
+.logo-text-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ajuste do título para caber bem no espaço */
+.logo-title {
+    font-size: 22px; /* Reduzido levemente para acompanhar o ano */
+    margin: 0;
+    font-weight: bold;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    text-align: left;
+}
+
+/* Estilo discreto para o © 2026 logo abaixo do nome */
+.logo-copy {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75); /* Um branco mais suave */
+    font-weight: 500;
+    margin-top: 2px;
 }
