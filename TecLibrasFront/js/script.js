@@ -1,4 +1,5 @@
 const apiUrl = 'http://localhost:5079/api/sinais'; 
+const apiUsuariosUrl = 'http://localhost:5079/api/usuarios';
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -20,12 +21,190 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (role === "professor") {
     document.body.classList.add("perfil-professor");
+    atualizarNotificacoesAdmin();
   } else {
     document.body.classList.remove("perfil-professor");
   }
 
   carregarSinais();
 
+  // ===================================================
+  // LÓGICA DE NOTIFICAÇÕES E GESTÃO DE INTÉRPRETES
+  // ===================================================
+  function atualizarNotificacoesAdmin() {
+    const pendentes = JSON.parse(localStorage.getItem('teclibras_pendentes')) || [];
+    const badge = document.getElementById('notif-badge');
+    
+    if (badge) {
+      if (pendentes.length > 0) {
+        badge.innerText = pendentes.length;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+  }
+
+  function renderizarListaPendentes() {
+    const container = document.getElementById('lista-pendentes-container');
+    if (!container) return;
+
+    const pendentes = JSON.parse(localStorage.getItem('teclibras_pendentes')) || [];
+
+    if (pendentes.length === 0) {
+      container.innerHTML = '<p style="text-align: center; color: #777;">Nenhuma solicitação pendente no momento.</p>';
+      return;
+    }
+
+    container.innerHTML = pendentes.map(item => `
+      <div class="item-pendente" data-id="${item.id}">
+        <div class="item-pendente-info">
+          <strong>${item.email}</strong>
+          <small>Perfil solicitado: ${item.perfil} | Data: ${item.data}</small>
+        </div>
+        <div class="item-pendente-acoes">
+          <button class="btn-aceitar-user" onclick="aceitarUsuario(${item.id})">✓ Aceitar</button>
+          <button class="btn-rejeitar-user" onclick="rejeitarUsuario(${item.id})">✕ Rejeitar</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.aceitarUsuario = function(id) {
+    let pendentes = JSON.parse(localStorage.getItem('teclibras_pendentes')) || [];
+    const usuario = pendentes.find(p => p.id === id);
+    
+    pendentes = pendentes.filter(p => p.id !== id);
+    localStorage.setItem('teclibras_pendentes', JSON.stringify(pendentes));
+    
+    atualizarNotificacoesAdmin();
+    renderizarListaPendentes();
+    alert(`Solicitação de ${usuario ? usuario.email : 'usuário'} aceita com sucesso!`);
+  };
+
+  window.rejeitarUsuario = function(id) {
+    let pendentes = JSON.parse(localStorage.getItem('teclibras_pendentes')) || [];
+    pendentes = pendentes.filter(p => p.id !== id);
+    localStorage.setItem('teclibras_pendentes', JSON.stringify(pendentes));
+    
+    atualizarNotificacoesAdmin();
+    renderizarListaPendentes();
+    alert("Solicitação rejeitada.");
+  };
+
+  // ===================================================
+  // BUSCA E RENDERIZAÇÃO DA TABELA DE USUÁRIOS
+  // ===================================================
+  async function carregarUsuarios() {
+    const tabelaCorpo = document.getElementById('tabela-usuarios-corpo');
+    if (!tabelaCorpo) return;
+
+    try {
+      const resposta = await fetch(apiUsuariosUrl);
+      if (!resposta.ok) throw new Error("Erro ao conectar na rota de usuários");
+      
+      const usuarios = await resposta.json();
+      tabelaCorpo.innerHTML = '';
+
+      if (usuarios.length === 0) {
+        tabelaCorpo.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px;">Nenhum usuário cadastrado encontrado.</td></tr>';
+        return;
+      }
+
+      usuarios.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.style.borderBottom = "1px solid #eee";
+        tr.innerHTML = `
+          <td style="padding: 10px;">${user.id_usuario || user.id || '-'}</td>
+          <td style="padding: 10px;">${user.email || user.nome}</td>
+          <td style="padding: 10px;"><strong>${user.perfil || 'USUARIO'}</strong></td>
+          <td style="padding: 10px;">${user.data_criacao ? new Date(user.data_criacao).toLocaleDateString('pt-BR') : 'Recente'}</td>
+        `;
+        tabelaCorpo.appendChild(tr);
+      });
+    } catch (erro) {
+      console.error(erro);
+      // Fallback enquanto a API do backend não está pronta
+      tabelaCorpo.innerHTML = `
+        <tr>
+          <td colspan="4" style="text-align: center; color: #777; padding: 15px;">
+            Aguardando integração com o backend (<code>${apiUsuariosUrl}</code>)
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  // EVENTO DE BUSCA EM TEMPO REAL DE USUÁRIOS
+  const searchUsuarioInput = document.getElementById("search-usuario-input");
+  if (searchUsuarioInput) {
+    searchUsuarioInput.addEventListener("input", () => {
+      const termo = searchUsuarioInput.value.toLowerCase().trim();
+      const linhas = document.querySelectorAll("#tabela-usuarios-corpo tr");
+
+      linhas.forEach(linha => {
+        const textoLinha = linha.innerText.toLowerCase();
+        if (textoLinha.includes(termo)) {
+          linha.style.display = "";
+        } else {
+          linha.style.display = "none";
+        }
+      });
+    });
+  }
+
+  // ===================================================
+  // ABAS DO MODAL DE GERENCIAMENTO
+  // ===================================================
+  const tabPendentes = document.getElementById("tab-pendentes");
+  const tabTodosUsuarios = document.getElementById("tab-todos-usuarios");
+  const secPendentes = document.getElementById("sec-pendentes");
+  const secTodosUsuarios = document.getElementById("sec-todos-usuarios");
+
+  if (tabPendentes && tabTodosUsuarios) {
+    tabPendentes.addEventListener("click", () => {
+      tabPendentes.style.background = "#1a73e8";
+      tabPendentes.style.color = "white";
+      tabTodosUsuarios.style.background = "#e0e0e0";
+      tabTodosUsuarios.style.color = "#333";
+
+      secPendentes.style.display = "block";
+      secTodosUsuarios.style.display = "none";
+    });
+
+    tabTodosUsuarios.addEventListener("click", () => {
+      tabTodosUsuarios.style.background = "#1a73e8";
+      tabTodosUsuarios.style.color = "white";
+      tabPendentes.style.background = "#e0e0e0";
+      tabPendentes.style.color = "#333";
+
+      secPendentes.style.display = "none";
+      secTodosUsuarios.style.display = "block";
+
+      // Reseta o campo de busca e recarrega os usuários
+      if (searchUsuarioInput) searchUsuarioInput.value = "";
+      carregarUsuarios();
+    });
+  }
+
+  // Eventos para abrir o modal de gestão pelo Sino ou Engrenagem
+  const btnBell = document.getElementById('notif-bell-btn');
+  const btnGear = document.getElementById('btn-gestao-gear');
+  const modalGestao = document.getElementById('modal-gestao-usuarios');
+  const btnFecharGestao = document.getElementById('fechar-modal-gestao');
+
+  const abrirModalGestao = () => {
+    renderizarListaPendentes();
+    if (modalGestao) modalGestao.style.display = 'block';
+  };
+
+  if (btnBell) btnBell.addEventListener('click', abrirModalGestao);
+  if (btnGear) btnGear.addEventListener('click', abrirModalGestao);
+  if (btnFecharGestao) btnFecharGestao.addEventListener('click', () => modalGestao.style.display = 'none');
+
+  // ===================================================
+  // CARREGAR SINAIS E OUTRAS FUNÇÕES ORIGINAIS
+  // ===================================================
   async function carregarSinais() {
     const container = document.getElementById('sinais-container');
     if (!container) return;
@@ -43,16 +222,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       sinais.forEach(sinal => {
-        // let urlImg1 = sinal.imagem.url.startsWith("http") ? sinal.imagem.url : `http://localhost:5079/${sinal.imagem.url}`;
-        // let imagensHtml = `<img src="${urlImg1}" alt="${sinal.termoTi} - Principal">`;
-        
-        // if (sinal.imagemSecundaria && sinal.imagemSecundaria.url) {
-        //   let urlImg2 = sinal.imagemSecundaria.url.startsWith("http") ? sinal.imagemSecundaria.url : `http://localhost:5079/${sinal.imagemSecundaria.url}`;
-        //   imagensHtml += `<img src="${urlImg2}" alt="${sinal.termoTi} - Secundária">`;
-        // }
         let imagensHtml = '';
 
-        // Verifica e monta a Imagem Principal com segurança
         if (sinal.imagem) {
           let urlOriginal1 = sinal.imagem.url || (typeof sinal.imagem === 'string' ? sinal.imagem : null);
           if (urlOriginal1) {
@@ -61,14 +232,11 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
 
-        // Verifica e monta a Imagem Secundária com segurança
         if (sinal.imagemSecundaria) {
-          // Pega a URL caso seja um objeto (.url) ou caso seja uma string direta
           let urlOriginal2 = sinal.imagemSecundaria.url || (typeof sinal.imagemSecundaria === 'string' ? sinal.imagemSecundaria : null);
-          
           if (urlOriginal2) {
             let urlImg2 = urlOriginal2.startsWith("http") ? urlOriginal2 : `http://localhost:5079/${urlOriginal2}`;
-            imagensHtml += `<img src="${urlImg2}" alt="${sinal.termoTi} - Secundária" style="margin-left: 10px;">`; // Margem para evitar que fiquem coladas/sobrepostas
+            imagensHtml += `<img src="${urlImg2}" alt="${sinal.termoTi} - Secundária" style="margin-left: 10px;">`;
           }
         }
 
@@ -311,6 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       if (modal && modal.style.display === "block") modal.style.display = "none";
+      if (modalGestao && modalGestao.style.display === "block") modalGestao.style.display = "none";
       if (lightbox && lightbox.style.display === "flex") lightbox.style.display = "none";
       if (userDropdown) userDropdown.classList.remove("show");
     }

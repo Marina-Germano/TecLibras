@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- CORRIGIDO: Link para o CSS específico do cadastro -->
+  <!-- Link para o CSS específico do cadastro -->
   <link rel="stylesheet" href="css/cadastro.css">
 </head>
 <body>
@@ -39,7 +39,6 @@
         <select id="cad-perfil">
           <option value="" disabled selected>Selecione seu perfil...</option>
           <option value="aluno">Aluno</option>
-          <option value="professor">Professor</option>
           <option value="interprete">Intérprete</option>
         </select>
         <i class="fa-solid fa-user-tag input-icon"></i>
@@ -87,29 +86,7 @@
     </div>
   </div>
 
-  <!-- Script JS para validação básica e simulação de envio -->
-  <script>
-    document.getElementById('btn-enviar-codigo').addEventListener('click', function() {
-      const email = document.getElementById('cad-email').value;
-      const perfil = document.getElementById('cad-perfil').value;
-      const nascimento = document.getElementById('cad-nascimento').value;
-      const senha = document.getElementById('cad-senha').value;
-      const confirmaSenha = document.getElementById('cad-confirma-senha').value;
-
-      if (!email || !perfil || !nascimento || !senha || !confirmaSenha) {
-        alert('Por favor, preencha todos os campos!');
-        return;
-      }
-
-      if (senha !== confirmaSenha) {
-        alert('As senhas não coincidem!');
-        return;
-      }
-
-      // Simulação. Quando a API estiver pronta, faremos um fetch() aqui.
-      alert(`Código de verificação enviado para ${email}! Verifique sua caixa de entrada.`);
-      window.location.href = 'login.html';
-    });
-  </script>
+  <!-- Script JS externo organizado -->
+  <script src="js/cadastro.js"></script>
 </body>
 </html>

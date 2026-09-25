@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>TecLibras - Painel do Professor</title>
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <!-- Conexão com o arquivo CSS externo -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-  <!-- NOVA SIDEBAR UNIFICADA (Substituiu o Header e a Sidebar antiga) -->
-<aside class="sidebar">
+  <!-- SIDEBAR UNIFICADA -->
+  <aside class="sidebar">
 
     <div class="sidebar-header">
       <img src="img/Logo.png" alt="Logo TecLibras" class="sidebar-logo">
@@ -21,18 +23,23 @@
     </div>
 
     <div class="search-container">
-      
       <input type="text" id="search-input" placeholder="Buscar sinal..." aria-label="Buscar sinal">
       <button id="clear-search" class="clear-search-btn" title="Limpar busca" type="button">&times;</button>
     </div>
 
-    <!-- Ferramentas da Sidebar (como o Upload) -->
+    <!-- Ferramentas da Sidebar (Upload e Engrenagem de Gerenciamento) -->
     <div class="sidebar-menu-items">
       <div class="sidebar-tool tool-upload" title="Upload de novo sinal">➕ Novo Sinal</div>
+      <div class="sidebar-tool tool-admin-gear" id="btn-gestao-gear" title="Gerenciar Usuários">⚙️ Gerenciar</div>
     </div>
     
     <!-- Bloco de Acesso/Usuário empurrado para o final da barra -->
     <div class="user-access">
+        <!-- Sino de Notificação com Badge -->
+        <button id="notif-bell-btn" class="notif-btn tool-admin-bell" title="Notificações Pendentes" type="button">
+          🔔<span id="notif-badge" class="notif-badge" style="display: none;">0</span>
+        </button>
+
         <button id="theme-toggle" aria-label="Alternar modo escuro" type="button">🌙</button>
         <div class="user-icon" id="user-menu-btn" title="Login/Cadastro">👤</div>
         
@@ -52,13 +59,11 @@
   </aside>
 
   <!-- CONTEÚDO PRINCIPAL À DIREITA -->
-
   <main class="container" id="sinais-container">
       <p style="text-align: center; width: 100%;">Carregando sinais...</p>
   </main>
 
-
-
+  <!-- Modal Cadastrar Novo Sinal -->
   <div id="modal-upload" class="modal">
     <div class="modal-content">
       <h2>Cadastrar Novo Sinal</h2>
@@ -89,14 +94,70 @@
     </div>
   </div>
 
-  <!-- Conexão com o arquivo JavaScript externo -->
-  <script src="js/script.js"></script>
+  <!-- MODAL DE GERENCIAMENTO (APROVAÇÃO + LISTA DE USUÁRIOS) -->
+  <div id="modal-gestao-usuarios" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <h2>⚙️ Painel de Gerenciamento de Usuários</h2>
+      
+      <!-- ABAS DE NAVEGAÇÃO DO MODAL -->
+      <div class="gestao-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px;">
+        <button id="tab-pendentes" class="tab-btn active" style="padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          📋 Solicitações Pendentes
+        </button>
+        <button id="tab-todos-usuarios" class="tab-btn" style="padding: 8px 16px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; cursor: pointer;">
+          👥 Todos os Usuários
+        </button>
+      </div>
 
-  <!-- Aumento da imagem ao toque --> 
+      <!-- SEÇÃO 1: INTÉRPRETES PENDENTES DE APROVAÇÃO -->
+      <div id="sec-pendentes">
+        <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Solicitações de novos intérpretes aguardando aprovação:</p>
+        <div id="lista-pendentes-container">
+          <!-- Preenchido via JS -->
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: TABELA DE TODOS OS USUÁRIOS CADASTRADOS -->
+      <div id="sec-todos-usuarios" style="display: none;">
+        
+        <!-- CABEÇALHO DA ABA COM CAMPO DE BUSCA DE USUÁRIO -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+          <p style="color: #666; font-size: 14px; margin: 0;">Lista completa de usuários registrados no sistema:</p>
+          <input type="text" id="search-usuario-input" placeholder="🔍 Buscar por nome ou e-mail..." style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; width: 260px; font-size: 14px; outline: none;">
+        </div>
+
+        <div style="overflow-x: auto; max-height: 350px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="position: sticky; top: 0; background-color: #f1f3f4;">
+              <tr style="border-bottom: 2px solid #ccc;">
+                <th style="padding: 10px;">ID</th>
+                <th style="padding: 10px;">E-mail / Usuário</th>
+                <th style="padding: 10px;">Perfil</th>
+                <th style="padding: 10px;">Data de Cadastro</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-usuarios-corpo">
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 15px;">Carregando usuários...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-buttons" style="justify-content: flex-end; margin-top: 25px;">
+        <button id="fechar-modal-gestao" style="background: #6c757d; color: white;">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox (Zoom na Imagem) --> 
   <div id="lightbox-modal" class="lightbox">
     <span class="lightbox-close">&times;</span>
     <img class="lightbox-content" id="lightbox-img" alt="Sinal em tamanho grande">
   </div>
 
+  <!-- Conexão com o arquivo JavaScript externo -->
+  <script src="js/script.js"></script>
 </body>
 </html>
